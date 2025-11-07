@@ -1,5 +1,3 @@
-<img align="right" src="https://raw.githubusercontent.com/h2337/cppq/refs/heads/master/logo.svg">
-
 # TaskForge
 
 Distributed, Redis-backed task queue for modern C++17 applications with worker orchestration, scheduling, and tooling built-in.
