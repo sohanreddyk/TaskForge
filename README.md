@@ -16,7 +16,7 @@ Distributed, Redis-backed task queue for modern C++17 applications with worker o
 - [License](#license)
 
 ## Overview
-cppq is a header-only task queue that lets you enqueue work from C++ and execute it asynchronously via Redis. Workers pull jobs, run user supplied handlers, and update task state in Redis. The library focuses on predictable behaviour and ease of adoption—drop the header in your project, link a couple of dependencies, and you have a resilient queue.
+TaskForge is a header-only task queue that lets you enqueue work from C++ and execute it asynchronously via Redis. Workers pull jobs, run user supplied handlers, and update task state in Redis. The library focuses on predictable behaviour and ease of adoption—drop the header in your project, link a couple of dependencies, and you have a resilient queue.
 
 ### Architecture at a Glance
 - Producers enqueue `Task` objects into Redis lists and hashes.
@@ -54,17 +54,17 @@ brew install hiredis ossp-uuid
 ```
 
 ## Quickstart
-1. Copy `cppq.hpp` into your include path.
+1. Copy `TaskForge.hpp` into your include path.
 2. Include the header and link against hiredis, uuid, and pthread on POSIX systems:
    ```bash
-   g++ -std=c++17 your_app.cpp -I/path/to/cppq -lhiredis -luuid -lpthread
+   g++ -std=c++17 your_app.cpp -I/path/to/TaskForge -lhiredis -luuid -lpthread
    ```
 3. Register task handlers before calling `runServer`.
 4. Start Redis and execute your application.
 
 ## Example
 ```cpp
-#include "cppq.hpp"
+#include "TaskForge.hpp"
 
 #include <nlohmann/json.hpp>
 
@@ -83,14 +83,14 @@ void to_json(nlohmann::json& j, const EmailDeliveryPayload& p) {
 }
 
 // Helper function to create a new task with the given payload
-cppq::Task NewEmailDeliveryTask(EmailDeliveryPayload payload) {
+TaskForge::Task NewEmailDeliveryTask(EmailDeliveryPayload payload) {
   nlohmann::json j = payload;
   // "10" is maxRetry -- the number of times the task will be retried on exception
-  return cppq::Task{TypeEmailDelivery, j.dump(), 10};
+  return TaskForge::Task{TypeEmailDelivery, j.dump(), 10};
 }
 
 // The actual task code
-void HandleEmailDeliveryTask(cppq::Task& task) {
+void HandleEmailDeliveryTask(TaskForge::Task& task) {
   // Fetch the parameters
   nlohmann::json parsedPayload = nlohmann::json::parse(task.payload);
   int userID = parsedPayload["UserID"];
@@ -106,7 +106,7 @@ void HandleEmailDeliveryTask(cppq::Task& task) {
 
 int main(int argc, char* argv[]) {
   // Register task types and handlers
-  cppq::registerHandler(TypeEmailDelivery, &HandleEmailDeliveryTask);
+  TaskForge::registerHandler(TypeEmailDelivery, &HandleEmailDeliveryTask);
 
   // Create a Redis connection for enqueuing, you can reuse this for subsequent enqueues
   redisOptions redisOpts = {0};
@@ -118,29 +118,29 @@ int main(int argc, char* argv[]) {
   }
 
   // Create tasks
-  cppq::Task task = NewEmailDeliveryTask(EmailDeliveryPayload{.UserID = 666, .TemplateID = "AH"});
-  cppq::Task task2 = NewEmailDeliveryTask(EmailDeliveryPayload{.UserID = 606, .TemplateID = "BH"});
-  cppq::Task task3 = NewEmailDeliveryTask(EmailDeliveryPayload{.UserID = 666, .TemplateID = "CH"});
+  TaskForge::Task task = NewEmailDeliveryTask(EmailDeliveryPayload{.UserID = 666, .TemplateID = "AH"});
+  TaskForge::Task task2 = NewEmailDeliveryTask(EmailDeliveryPayload{.UserID = 606, .TemplateID = "BH"});
+  TaskForge::Task task3 = NewEmailDeliveryTask(EmailDeliveryPayload{.UserID = 666, .TemplateID = "CH"});
 
   // Enqueue a task on default queue
-  cppq::enqueue(c, task, "default");
+  TaskForge::enqueue(c, task, "default");
   // Enqueue a task on high priority queue
-  cppq::enqueue(c, task2, "high");
+  TaskForge::enqueue(c, task2, "high");
   // Enqueue a task on default queue to be run at exactly 1 minute from now
-  cppq::enqueue(
+  TaskForge::enqueue(
       c,
       task3,
       "default",
-      cppq::scheduleOptions(std::chrono::system_clock::now() + std::chrono::minutes(1)));
+      TaskForge::scheduleOptions(std::chrono::system_clock::now() + std::chrono::minutes(1)));
 
   // Pause queue to stop processing tasks from it
-  cppq::pause(c, "default");
+  TaskForge::pause(c, "default");
   // Unpause queue to continue processing tasks from it
-  cppq::unpause(c, "default");
+  TaskForge::unpause(c, "default");
 
   // This call will loop forever checking the pending queue
   // before being pushed back to pending queue (i.e. when worker dies in middle of execution).
-  cppq::runServer(redisOpts, {{"low", 5}, {"default", 10}, {"high", 20}}, 1000);
+  TaskForge::runServer(redisOpts, {{"low", 5}, {"default", 10}, {"high", 20}}, 1000);
 }
 ```
 
@@ -181,7 +181,7 @@ Key capabilities:
 - Inspect queues, task states, and statistics.
 - Pause or resume queues.
 - Dump task metadata for debugging.
-- Load configuration from environment variables, CLI flags, or `~/.config/cppq/config.json`.
+- Load configuration from environment variables, CLI flags, or `~/.config/TaskForge/config.json`.
 
 For deeper usage details see [`cli/README.md`](cli/README.md).
 
@@ -198,7 +198,7 @@ Visit http://localhost:3000/ and connect to your Redis instance (default `redis:
 ## Project Layout
 ```
 .
-├── cppq.hpp          # Header-only queue library
+├── TaskForge.hpp          # Header-only queue library
 ├── example.cpp       # Minimal producer/worker demonstration
 ├── tests.cpp         # Catch2 regression suite
 ├── build_tests.sh    # Helper script for building tests
@@ -207,4 +207,4 @@ Visit http://localhost:3000/ and connect to your Redis instance (default `redis:
 ```
 
 ## License
-cppq is released under the MIT License. The bundled thread pool implementation is adapted from https://github.com/bshoshany/thread-pool.
+TaskForge is released under the MIT License. The bundled thread pool implementation is adapted from https://github.com/bshoshany/thread-pool.
