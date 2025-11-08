@@ -989,4 +989,5 @@ void runServer(redisOptions redisOpts, std::map<std::string, int> queues,
     }
   }
 }
-}  // namespace cppq
+}  
+// namespace cppq
