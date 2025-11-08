@@ -742,3 +742,4 @@ TEST_CASE_METHOD(RedisTestFixture, "Error handling and edge cases",
     freeReplyObject(reply);
   }
 }
+//test.cpp
