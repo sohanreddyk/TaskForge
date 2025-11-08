@@ -31,6 +31,6 @@ if [ $? -eq 0 ]; then
     echo "  [threadpool] - Thread pool functionality"
     echo "  [errors]     - Error handling and edge cases"
 else
-    echo "Build failed!"
+    echo "Failed to build"
     exit 1
 fi
