@@ -1,6 +1,6 @@
-# cppq CLI - Modern Redis Queue Management Tool
+# TaskForge CLI - Modern Redis Queue Management Tool
 
-A powerful, modern command-line interface for managing cppq (C++ Queue) Redis queues with rich formatting, comprehensive logging, and flexible configuration options.
+A powerful, modern command-line interface for managing TaskForge (C++ Queue) Redis queues with rich formatting, comprehensive logging, and flexible configuration options.
 
 ## Features
 
@@ -16,7 +16,7 @@ A powerful, modern command-line interface for managing cppq (C++ Queue) Redis qu
 
 1. Clone the repository and navigate to the CLI directory:
 ```bash
-cd cppq/cli
+cd TaskForge/cli
 ```
 
 2. Install dependencies:
@@ -57,7 +57,7 @@ Create a configuration file:
 python main.py config --create
 ```
 
-This creates a config file at `~/.config/cppq/config.json`:
+This creates a config file at `~/.config/TaskForge/config.json`:
 ```json
 {
   "redis_uri": "redis://localhost",
@@ -248,7 +248,7 @@ python main.py --debug <command>
 
 Configure log file:
 ```bash
-export CPPQ_LOG_FILE=/var/log/cppq-cli.log
+export CPPQ_LOG_FILE=/var/log/TaskForge-cli.log
 ```
 
 ## Troubleshooting
