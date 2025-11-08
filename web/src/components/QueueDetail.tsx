@@ -296,6 +296,6 @@ export default function QueueDetail({ queueName, refreshInterval }: QueueDetailP
           </div>
         )}
       </div>
-    
+    </div>
   );
 }
